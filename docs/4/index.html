@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml">
+  <head>
+    <title>第13回インタラ会 サンプル3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <style type="text/css">
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body, html {
+        width: 100%;
+        height: 100%;
+      }
+      .mv {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+
+    <!-- ########################################## -->
+    <!-- vertexシェーダー -->
+    <!-- ########################################## -->
+    <script id="vBasic" type="x-shader/x-vertex">
+
+      varying vec2 vUv;
+
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+
+    </script>
+
+    <!-- ########################################## -->
+    <!-- fragmentシェーダー -->
+    <!-- ########################################## -->
+    <script id="fBasic" type="x-shader/x-fragment">
+
+      uniform sampler2D tDiffuse;
+      uniform sampler2D tMask;
+      uniform vec3 color;
+
+      varying vec2 vUv;
+
+      void main() {
+
+        vec4 mask = texture2D(tMask, vUv);
+
+        float kake = 0.1;
+        vec2 zure = vec2((mask.r * 2.0 - 1.0) * kake, (mask.g * 2.0 - 1.0) * kake);
+        vec4 dest = texture2D(tDiffuse, vUv + zure);
+
+
+
+        dest.rgb = color * mask.grr * 2.0;
+        dest.a *= mask.a;
+
+        // dest.rgb = 1.0 - dest.rgb;
+
+        gl_FragColor = dest;
+
+      }
+
+    </script>
+
+  </head>
+  <body>
+
+    <canvas class="mv"></canvas>
+
+    <script src="../libs/jquery.min.js"></script>
+    <script src="../libs/three.js"></script>
+    <script src="../libs/chroma.min.js"></script>
+    <script src="../libs/isMobile.min.js"></script>
+    <script src="../libs/utils.js"></script>
+    <script src="main.js"></script>
+
+  </body>
+</html>
